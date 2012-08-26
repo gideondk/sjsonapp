@@ -30,7 +30,7 @@ class SerializationSpec extends Spec with ShouldMatchers {
              field[String]("gender", m)                |@| 
              field[Int]("age", m)) { Person }
 
-          case _ => "JsObject expected".fail.liftFailNel
+          case _ => "JsObject expected".fail.toValidationNel
         }
 
         def writes(p: Person) =
@@ -52,11 +52,11 @@ class SerializationSpec extends Spec with ShouldMatchers {
       case class Person(firstName: String, lastName: String, gender: String, age: Int)
 
       val validGender: String => ValidationNEL[String, String] = {g =>
-        if (g == "M" || g == "F") g.success else "gender must be M or F".fail.liftFailNel
+        if (g == "M" || g == "F") g.success else "gender must be M or F".fail.toValidationNel
       }
 
       val validAge: Int => ValidationNEL[String, Int] = {a =>
-        if (a < 0 || a > 100) "age must be positive and < 100".fail.liftFailNel else a.success
+        if (a < 0 || a > 100) "age must be positive and < 100".fail.toValidationNel else a.success
       }
 
       implicit val PersonFormat: Format[Person] = new Format[Person] {
@@ -68,7 +68,7 @@ class SerializationSpec extends Spec with ShouldMatchers {
              field[String]("gender", m, validGender)   |@| 
              field[Int]("age", m, validAge)) { Person }
 
-          case _ => "JsObject expected".fail.liftFailNel
+          case _ => "JsObject expected".fail.toValidationNel
         }
 
         def writes(p: Person) =
@@ -108,29 +108,29 @@ class SerializationSpec extends Spec with ShouldMatchers {
       asProduct6("firstName", "lastName", "age", "no", "street", "zip")(Me)(Me.unapply(_).get)
   
     val positive: Int => ValidationNEL[String, Int] = 
-      (i: Int) => if (i > 0) i.success else "must be +ve".fail.liftFailNel
+      (i: Int) => if (i > 0) i.success else "must be +ve".fail.toValidationNel
 
     val min: Int => ValidationNEL[String, Int] = 
-      (i: Int) => if (i > 10) i.success else "must be > 10".fail.liftFailNel
+      (i: Int) => if (i > 10) i.success else "must be > 10".fail.toValidationNel
 
     val max: Int => ValidationNEL[String, Int] = 
-      (i: Int) => if (i < 100) i.success else "must be < 100".fail.liftFailNel
+      (i: Int) => if (i < 100) i.success else "must be < 100".fail.toValidationNel
 
     it("should serialize and validate") {
       val me = Me("debasish", "ghosh", 30, "1050/2", "survey park", "700075")
       val json = tojson(me)
 
-      import Validation.Monad._
       type VA[A] = ValidationNEL[String, A]
+      implicit def G[E] = Validation.validationMonad[E]
 
       field[Int]("age", json.toOption.get, 
-        kleisli[VA, Int, Int](positive) >=> kleisli[VA, Int, Int](min) >=> kleisli[VA, Int, Int](max)) should equal(30.success)
+        Kleisli[VA, Int, Int](positive) >=> Kleisli[VA, Int, Int](min) >=> Kleisli[VA, Int, Int](max)) should equal(30.success)
 
       val me1 = me.copy(age = 300)
       val json1 = tojson(me1)
 
       field[Int]("age", json1.toOption.get, 
-        kleisli[VA, Int, Int](positive) >=> kleisli[VA, Int, Int](min) >=> kleisli[VA, Int, Int](max)).fail.toOption.get.list should equal(List("must be < 100"))
+        Kleisli[VA, Int, Int](positive) >=> Kleisli[VA, Int, Int](min) >=> Kleisli[VA, Int, Int](max)).fail.toOption.get.list should equal(List("must be < 100"))
     }
   }
 

@@ -15,12 +15,15 @@ object SJsonAppProject extends Build
     name := "sjsonapp",
     libraryDependencies ++= Seq("net.databinder" % "dispatch-json_2.9.1" % "0.8.7",
                                 "junit" % "junit" % "4.8.1" % "test",
-                                "org.scalaz" %% "scalaz-core" % "6.0.4",
+                                "org.scalaz" %% "scalaz-core" % "7.0-SNAPSHOT" % "compile" withSources(),
                                 "org.scalatest" % "scalatest_2.9.1" % "1.6.1" % "test"),
     parallelExecution in Test := false,
     publishTo := Some("Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"),
     credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
-    unmanagedResources in Compile <+= baseDirectory map { _ / "LICENSE" }
+    unmanagedResources in Compile <+= baseDirectory map { _ / "LICENSE" },
+
+    resolvers ++= Seq("Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots")
+
   )
 
   lazy val fmpp = TaskKey[Seq[File]]("fmpp")

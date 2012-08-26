@@ -12,7 +12,7 @@ trait Primitives extends Protocol {
     def writes(o: Int) = JsValue.apply(o).success
     def reads(json: JsValue) = json match {
       case JsNumber(n) => n.intValue.success
-      case _ => "Int expected".fail.liftFailNel
+      case _ => "Int expected".fail.toValidationNel
     }
   }
 
@@ -20,7 +20,7 @@ trait Primitives extends Protocol {
     def writes(o: Short) = JsValue.apply(o).success
     def reads(json: JsValue) = json match {
       case JsNumber(n) => n.shortValue.success
-      case _ => "Short expected".fail.liftFailNel
+      case _ => "Short expected".fail.toValidationNel
     }
   }
 
@@ -28,7 +28,7 @@ trait Primitives extends Protocol {
     def writes(o: Long) = JsValue.apply(o).success
     def reads(json: JsValue) = json match {
       case JsNumber(n) => n.longValue.success
-      case _ => "Long expected".fail.liftFailNel
+      case _ => "Long expected".fail.toValidationNel
     }
   }
 
@@ -36,7 +36,7 @@ trait Primitives extends Protocol {
     def writes(o: Float) = JsValue.apply(o).success
     def reads(json: JsValue) = json match {
       case JsNumber(n) => n.floatValue.success
-      case _ => "Float expected".fail.liftFailNel
+      case _ => "Float expected".fail.toValidationNel
     }
   }
 
@@ -44,7 +44,7 @@ trait Primitives extends Protocol {
     def writes(o: Double) = JsValue.apply(o).success
     def reads(json: JsValue) = json match {
       case JsNumber(n) => n.doubleValue.success
-      case _ => "Double expected".fail.liftFailNel
+      case _ => "Double expected".fail.toValidationNel
     }
   }
 
@@ -53,7 +53,7 @@ trait Primitives extends Protocol {
     def reads(json: JsValue) = json match {
       case JsTrue => true.success
       case JsFalse => false.success
-      case _ => "Boolean expected".fail.liftFailNel
+      case _ => "Boolean expected".fail.toValidationNel
     }
   }
 
@@ -61,7 +61,7 @@ trait Primitives extends Protocol {
     def writes(o: String) = JsValue.apply(o).success
     def reads(json: JsValue) = json match {
       case JsString(s) => s.success
-      case _ => "String expected".fail.liftFailNel
+      case _ => "String expected".fail.toValidationNel
     }
   }
   implicit object JsValueFormat extends Format[JsValue] {

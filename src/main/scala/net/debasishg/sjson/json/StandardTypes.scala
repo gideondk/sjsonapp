@@ -45,7 +45,7 @@ trait BasicTypes extends Protocol {
             case Success(js) => JsArray(js).success
             case Failure(errs) => errs.fail
           }
-        case _ => ("Tuple" + ${i} + " expected").fail.liftFailNel
+        case _ => ("Tuple" + ${i} + " expected").fail.toValidationNel
       }
   }
   </#list>
@@ -61,7 +61,7 @@ trait CollectionTypes extends BasicTypes with Generic {
       }
     def reads(json: JsValue) = json match {
       case JsArray(ts) => ts.map(t => fromjson(t)(fmt)).sequence[({type λ[α]=ValidationNEL[String, α]})#λ, T]
-      case _ => "List expected".fail.liftFailNel
+      case _ => "List expected".fail.toValidationNel
     }
   }
 
@@ -73,7 +73,7 @@ trait CollectionTypes extends BasicTypes with Generic {
       }
     def reads(json: JsValue) = json match {
       case JsArray(ts) => ts.map(t => fromjson(t)(fmt)).sequence[({type λ[α]=ValidationNEL[String, α]})#λ, T]
-      case _ => "Seq expected".fail.liftFailNel
+      case _ => "Seq expected".fail.toValidationNel
     }
   }
 
@@ -86,7 +86,7 @@ trait CollectionTypes extends BasicTypes with Generic {
       }
     def reads(json: JsValue) = json match {
       case JsArray(ts) => (ts.map(t => fromjson(t)(fmt)).sequence[({type λ[α]=ValidationNEL[String, α]})#λ, T]).map(listToArray(_))
-      case _ => "Array expected".fail.liftFailNel
+      case _ => "Array expected".fail.toValidationNel
     }
   }
 
@@ -107,7 +107,7 @@ trait CollectionTypes extends BasicTypes with Generic {
         val Success(values) =
           m.map{ case (k, v) => fromjson[V](v)(fmtv)}.toList.sequence[({type λ[α]=ValidationNEL[String, α]})#λ, V]
         (Map() ++ (keys zip values)).success[NonEmptyList[String]]
-      case _ => "Map expected".fail.liftFailNel
+      case _ => "Map expected".fail.toValidationNel
     }
   }
 
@@ -132,7 +132,7 @@ trait StandardTypes extends CollectionTypes {
     def writes(o: BigInt) = JsValue.apply(o).success
     def reads(json: JsValue) = json match {
       case JsNumber(n) => n.toBigInt.success
-      case _ => "BigInt expected".fail.liftFailNel
+      case _ => "BigInt expected".fail.toValidationNel
     }
   }
 
@@ -140,7 +140,7 @@ trait StandardTypes extends CollectionTypes {
     def writes(o: BigDecimal) = JsValue.apply(o).success
     def reads(json: JsValue) = json match {
       case JsNumber(n) => n.success
-      case _ => "BigDecimal expected".fail.liftFailNel
+      case _ => "BigDecimal expected".fail.toValidationNel
     }
   }
 }

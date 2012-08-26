@@ -46,7 +46,7 @@ trait Generic extends Protocol {
           case Success(v) => from(v).success
           case Failure(e) => e.fail
         }
-      case _ => "Object expected".fail.liftFailNel
+      case _ => "Object expected".fail.toValidationNel
     }
   }
 
@@ -83,7 +83,7 @@ trait Generic extends Protocol {
           field[T${j}](f${j}, m)<#if i != j> |@|</#if>
           </#list>
         ) {apply}
-      case _ => "object expected".fail.liftFailNel
+      case _ => "object expected".fail.toValidationNel
     }
   }
   </#list>

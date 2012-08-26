@@ -34,20 +34,20 @@ object DefaultProtocol extends DefaultProtocol {
     val JsObject(m) = json
     m.get(JsString(name))
      .map(fromjson[T](_))
-     .getOrElse(("field " + name + " not found").fail.liftFailNel)
+     .getOrElse(("field " + name + " not found").fail.toValidationNel)
   }
 
   def field[T: Reads](name: String, json: JsValue, valid: T => ValidationNEL[String, T]): ValidationNEL[String, T] = {
     val JsObject(m) = json
     m.get(JsString(name))
      .map(fromjson[T](_).flatMap(valid))
-     .getOrElse(("field " + name + " not found").fail.liftFailNel)
+     .getOrElse(("field " + name + " not found").fail.toValidationNel)
   }
 
   def field_c[T: Reads](name: String): JsValue => ValidationNEL[String, T] = {json: JsValue =>
     val JsObject(m) = json
     m.get(JsString(name))
      .map(fromjson[T](_))
-     .getOrElse(("field " + name + " not found").fail.liftFailNel)
+     .getOrElse(("field " + name + " not found").fail.toValidationNel)
   }
 }

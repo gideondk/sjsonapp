@@ -37,16 +37,16 @@ trait Generic extends Protocol {
   def wrap[S, T](name: String)(to : S => T, from : T => S)(implicit fmt : Format[T]) = new Format[S]{
     def writes(s : S) = (tojson(name) <|*|> tojson(to(s))) match {
       case Success((k, v)) => JsObject(Map() ++ List((k.asInstanceOf[JsString], v))).success
-      case Failure(errs) => errs.fail
+      case Failure(errs) => errs.failure
     }
     def reads(js : JsValue) = js match {
       case m@JsObject(_) =>
         val f = field[T](name, m)
         f match {
           case Success(v) => from(v).success
-          case Failure(e) => e.fail
+          case Failure(e) => e.failure
         }
-      case _ => "Object expected".fail.toValidationNel
+      case _ => "Object expected".failure.toValidationNEL
     }
   }
 
@@ -73,7 +73,7 @@ trait Generic extends Protocol {
       ).sequence[({type λ[α]=ValidationNEL[String, α]})#λ, (JsValue, JsValue)] match {
         case Success(kvs) =>
           JsObject(Map.empty[JsString, JsValue] ++ kvs.map{case (k, v) => (k.asInstanceOf[JsString], v)}).success
-        case Failure(errs) => errs.fail
+        case Failure(errs) => errs.failure
       }
     }
     def reads(js: JsValue) = js match {
@@ -83,7 +83,7 @@ trait Generic extends Protocol {
           field[T${j}](f${j}, m)<#if i != j> |@|</#if>
           </#list>
         ) {apply}
-      case _ => "object expected".fail.toValidationNel
+      case _ => "object expected".failure.toValidationNEL
     }
   }
   </#list>

@@ -30,7 +30,7 @@ class SerializationSpec extends Spec with ShouldMatchers {
              field[String]("gender", m)                |@| 
              field[Int]("age", m)) { Person }
 
-          case _ => "JsObject expected".fail.toValidationNel
+          case _ => "JsObject expected".fail.toValidationNEL
         }
 
         def writes(p: Person) =
@@ -52,11 +52,11 @@ class SerializationSpec extends Spec with ShouldMatchers {
       case class Person(firstName: String, lastName: String, gender: String, age: Int)
 
       val validGender: String => ValidationNEL[String, String] = {g =>
-        if (g == "M" || g == "F") g.success else "gender must be M or F".fail.toValidationNel
+        if (g == "M" || g == "F") g.success else "gender must be M or F".fail.toValidationNEL
       }
 
       val validAge: Int => ValidationNEL[String, Int] = {a =>
-        if (a < 0 || a > 100) "age must be positive and < 100".fail.toValidationNel else a.success
+        if (a < 0 || a > 100) "age must be positive and < 100".fail.toValidationNEL else a.success
       }
 
       implicit val PersonFormat: Format[Person] = new Format[Person] {
@@ -68,7 +68,7 @@ class SerializationSpec extends Spec with ShouldMatchers {
              field[String]("gender", m, validGender)   |@| 
              field[Int]("age", m, validAge)) { Person }
 
-          case _ => "JsObject expected".fail.toValidationNel
+          case _ => "JsObject expected".fail.toValidationNEL
         }
 
         def writes(p: Person) =
@@ -108,13 +108,13 @@ class SerializationSpec extends Spec with ShouldMatchers {
       asProduct6("firstName", "lastName", "age", "no", "street", "zip")(Me)(Me.unapply(_).get)
   
     val positive: Int => ValidationNEL[String, Int] = 
-      (i: Int) => if (i > 0) i.success else "must be +ve".fail.toValidationNel
+      (i: Int) => if (i > 0) i.success else "must be +ve".fail.toValidationNEL
 
     val min: Int => ValidationNEL[String, Int] = 
-      (i: Int) => if (i > 10) i.success else "must be > 10".fail.toValidationNel
+      (i: Int) => if (i > 10) i.success else "must be > 10".fail.toValidationNEL
 
     val max: Int => ValidationNEL[String, Int] = 
-      (i: Int) => if (i < 100) i.success else "must be < 100".fail.toValidationNel
+      (i: Int) => if (i < 100) i.success else "must be < 100".fail.toValidationNEL
 
     it("should serialize and validate") {
       val me = Me("debasish", "ghosh", 30, "1050/2", "survey park", "700075")

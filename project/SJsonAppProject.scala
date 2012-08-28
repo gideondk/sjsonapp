@@ -7,19 +7,20 @@ object SJsonAppProject extends Build
 
   lazy val commonSettings: Seq[Setting[_]] = Seq(
     organization := "net.debasishg",
-    version := "0.1",
-    scalaVersion := "2.9.1"
+    version := "0.1-scalaz-seven",
+    scalaVersion := "2.9.2"
   )
 
   lazy val coreSettings = commonSettings ++ template ++ Seq(
     name := "sjsonapp",
     libraryDependencies ++= Seq("net.databinder" % "dispatch-json_2.9.1" % "0.8.7",
                                 "junit" % "junit" % "4.8.1" % "test",
-                                "org.scalaz" %% "scalaz-core" % "7.0-SNAPSHOT" % "compile" withSources(),
-                                "org.scalatest" % "scalatest_2.9.1" % "1.6.1" % "test"),
+                                "org.scalaz" %% "scalaz-core" % "7.0.0-M3" % "compile" withSources(),
+                                "org.scalatest" % "scalatest_2.9.2" % "1.6.1" % "test"),
     parallelExecution in Test := false,
-    publishTo := Some("Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"),
-    credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
+    publishTo := Some(Resolver.file("file", new File("/Developer/Projects/gideondk-mvn-repo"))),
+    // publishTo := Some("Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"),
+    // credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
     unmanagedResources in Compile <+= baseDirectory map { _ / "LICENSE" },
 
     resolvers ++= Seq("Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots")
